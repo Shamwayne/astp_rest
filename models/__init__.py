@@ -4,7 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, backref, relationship
 from datetime import datetime
 
-engine = create_engine('sqlite:///model.sqlite', echo=True)
+engine = create_engine('sqlite:///models.sqlite', echo=True)
 Base = declarative_base()
 
 """
@@ -139,7 +139,6 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     accountID = Column(String, unique=True)
     holder = Column(String, ForeignKey('student.id'))
-    transactions = relationship('Transactions', backref=backref('accountID'))
 
 
 class Transactions(Base):
@@ -324,6 +323,8 @@ class Message(Base):
     viewed = Column(Boolean)
     dateViewed = Column(DateTime, default=datetime.now)
 
+
+Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 #
