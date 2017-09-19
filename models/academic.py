@@ -2,7 +2,6 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, Foreig
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
-from .user import Person, Teacher, Student
 
 engine = create_engine('sqlite:///model.sqlite', echo=True)
 Base = declarative_base()

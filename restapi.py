@@ -45,7 +45,7 @@ curriculum_blueprint = manager.create_api(CurriculumLevel,
                                           methods=['GET', 'POST', 'PUT', 'DELETE'],
                                           collection_name='curriculum')
 
-homework_blueprint = manager.create_api(Account,
+homework_blueprint = manager.create_api(Homework,
                                         methods=['GET', 'POST', 'PUT', 'DELETE'],
                                         collection_name='homework')
 
