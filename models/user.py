@@ -3,7 +3,6 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float
 from sqlalchemy import ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, backref, relationship
-
 # from datetime import datetime
 
 """
@@ -49,14 +48,23 @@ class Person(Base):
         return rstring.format(self.firstname, self.surname, self.username, self.active)
 
 
-class Teacher(Person):
-    __tablename__ = 'teacher'
+class Employee(Person):
+    __tablename__ = 'employee'
     id = Column(Integer, ForeignKey('person.id'), primary_key=True)
     email = Column(String)
     phoneNumber = Column(String)
+    nationalID = Column(String, unique=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'employee',
+    }
+
+
+class Teacher(Employee):
+    __tablename__ = 'teacher'
+    id = Column(Integer, ForeignKey('employee.id'), primary_key=True)
     teacherType = Column(String)
     status = Column(String)
-    nationalID = Column(String, unique=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'teacher',
@@ -69,10 +77,7 @@ class Teacher(Person):
 
 class Administrator(Person):
     __tablename__ = 'administrator'
-    id = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    email = Column(String)
-    phoneNumber = Column(String)
-    nationalID = Column(String, unique=True)
+    id = Column(Integer, ForeignKey('employee.id'), primary_key=True)
 
     def __repr__(self):
         rstring = "<Admin name='{}' surname='{}' active='{}' email='{}' >"
@@ -85,14 +90,7 @@ class Administrator(Person):
 
 class Principal(Person):
     __tablename__ = 'administrator'
-    id = Column(Integer, ForeignKey('person.id'), primary_key=True)
-    email = Column(String)
-    phoneNumber = Column(String)
-    nationalID = Column(String, unique=True)
-
-    def __repr__(self):
-        rstring = "<Principal name='{}' surname='{}' active='{}' >"
-        return rstring.format(self.firstname, self.surname, self.active)
+    id = Column(Integer, ForeignKey('employee.id'), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'principal',
@@ -111,7 +109,7 @@ class Guardian(Person):
         return rstring.format(self.firstname, self.surname, self.email)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'Guardian',
+        'polymorphic_identity': 'guardian',
     }
 
 
@@ -127,7 +125,6 @@ class Student(Person):
     id = Column(Integer, ForeignKey('person.id'), primary_key=True)
     studentID = Column(String, unique=True)
     bcNumber = Column(String)
-    # classID = Column()
     # TODO: <class reference -> Class here
     guardians = relationship('Guardian',
                              backref=backref('child_of', lazy='dynamic'))
@@ -146,9 +143,7 @@ class Account(Base):
     id = Column(Integer, primary_key=True)
     accountID = Column(String, unique=True)
     holder = Column(String, ForeignKey('student.id'))
-
-
-transactions = relationship('Transactions', backref=backref('accountID'))
+    transactions = relationship('Transactions', backref=backref('accountID'))
 
 
 class Transactions(Base):
@@ -164,7 +159,10 @@ class Transactions(Base):
     lastModifiedBy = Column(Integer, ForeignKey('person.id'))
 
 
-# TODO: Implementation of Qualifications class
+class Qualifications(Base):
+    # TODO: Implementation of Qualifications class
+    pass
+
 # TODO: linking qualifications class with teachers and school employees etc.
 
 Base.metadata.create_all(engine)
