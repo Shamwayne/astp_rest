@@ -1,89 +1,95 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Float, ForeignKey
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 from datetime import datetime
+from .user import Person, Teacher, Student
 
-engine = create_engine('', echo=True)
+engine = create_engine('sqlite:///model.sqlite', echo=True)
 Base = declarative_base()
 
 
 class Subject(Base):
+    __tablename__ = 'subject'
     id = Column(Integer, primary_key=True)
     dateAdded = Column(DateTime, default=datetime.now)
-    # TODO: taughtBy = reference -> teacher
-    # TODO: addedBy  = reference -> person
-    # TODO: modifiedBY = reference -> person
+    taughtBy = Column(Integer, ForeignKey('teacher.id'))
+    addedBy = Column(Integer, ForeignKey('person.id'))
+    modifiedBy = Column(Integer, ForeignKey('person.id'))
 
 
 class Class(Base):
+    __tablename__ = 'class'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    # TODO: formTeacher = reference -> teacher
+    formTeacher = Column(Integer, ForeignKey('teacher.id'))
     dateAdded = Column(DateTime, default=datetime.now)
-    # TODO: addedBy = reference -> teacher
-    # TODO: modifiedBY = reference -> person
+    addedBy = Column(Integer, ForeignKey('teacher.id'))
+    modifiedBy = Column(Integer, ForeignKey('person.id'))
     dateModified = Column(DateTime, default=datetime.now)
 
 
 class CurriculumLevel(Base):
+    __tablename__ = 'curriculum_level'
     id = Column(Integer, primary_key=True)
     dateAdded = Column(DateTime, default=datetime.now)
-    # TODO: addedBy = reference -> person
-    # TODO: modifiedBY = reference -> person
+    addedBy = Column(Integer, ForeignKey('person.id'))
+    modifiedBy = Column(Integer, ForeignKey('person.id'))
 
 
-class Notes(Base):
+class Note(Base):
+    __tablename__ = 'notes'
     id = Column(Integer, primary_key=True)
-    # TODO: addedBy = reference -> teacher
-    # TODO: subject = reference -> subject
+    addedBy = Column(Integer, ForeignKey('teacher.id'))
+    subject = Column(Integer, ForeignKey('subject.id'))
     notes = Column(String)
     lastModified = Column(DateTime, default=datetime.now)
-    # TODO: lastModifiedBy = reference -> teacher
+    lastModifiedBy = Column(Integer, ForeignKey('teacher.id'))
 
 
 class Homework(Base):
+    __tablename__ = 'homework'
     id = Column(Integer, primary_key=True)
     dateAdded = Column(DateTime, default=datetime.now)
     dateDue = Column(DateTime, default=datetime.now)
     content = Column(String)
-    # TODO: addedBy = reference -> teacher
-    # TODO: subject = reference -> subject
+    addedBy = Column(Integer, ForeignKey('teacher.id'))
+    subject = Column(Integer, ForeignKey('subject.id'))
     submissionType = Column(String)
     status = Column(Boolean)
 
 
 class HomeworkSubmissions(Base):
+    __tablename__ = 'homework_submissions'
     id = Column(Integer, primary_key=True)
-    # TODO: submittedBy = reference -> student
-    # TODO: homework = reference -> homework
+    submittedBy = Column(Integer, ForeignKey('student.id'))
+    homework = Column(Integer, ForeignKey('homework.id'))
     dateOfSubmission = Column(DateTime, default=datetime.now)
 
 
-class AcademicResults(Base):
+class AcademicResult(Base):
+    __tablename__ = 'academic_results'
     id = Column(Integer, primary_key=True)
-    # TODO: student = reference -> student
-    # TODO: subject = reference -> subject
+    student = Column(Integer, ForeignKey('student.id'))
+    subject = Column(Integer, ForeignKey('subject.id'))
     result = Column(Float)
     total = Column(Float)
     resultFor = Column(Float)
     dateAdded = Column(DateTime, default=datetime.now)
-    # TODO: addedBy = reference -> teacher
-    dateLastModfied = Column(DateTime, default=datetime.now)
+    addedBy = Column(Integer, ForeignKey('teacher.id'))
+    dateLastModified = Column(DateTime, default=datetime.now)
     comment = Column(String)
-    # TODO: grade = reference -> grade
+    grade = Column(Integer, ForeignKey('grade.id'))
 
 
 class Grade(Base):
+    __tablename__ = 'grade'
     id = Column(Integer, primary_key=True)
     gradeName = Column(String)
     symbol = Column(String(2))
     grade_from = Column(Float)
     grade_to = Column(Float)
-    # TODO: addedBy = reference -> person
+    addedBy = Column(Integer, ForeignKey('person.id'))
     dateAdded = Column(DateTime, default=datetime.now)
     description = Column(String)
 
 Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()

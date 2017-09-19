@@ -4,6 +4,8 @@ from sqlalchemy import ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, backref, relationship
 # from datetime import datetime
+from .academic import Class
+
 
 """
 Assumptions and Issues:
@@ -15,7 +17,7 @@ Assumptions and Issues:
 - INCOMPLETE: Account
 """
 
-engine = create_engine('sqlite:///test1.sqlite', echo=True)
+engine = create_engine('sqlite:///model.sqlite', echo=True)
 
 Base = declarative_base()
 
@@ -89,7 +91,7 @@ class Administrator(Person):
 
 
 class Principal(Person):
-    __tablename__ = 'administrator'
+    __tablename__ = 'principal'
     id = Column(Integer, ForeignKey('employee.id'), primary_key=True)
 
     __mapper_args__ = {
@@ -125,7 +127,7 @@ class Student(Person):
     id = Column(Integer, ForeignKey('person.id'), primary_key=True)
     studentID = Column(String, unique=True)
     bcNumber = Column(String)
-    # TODO: <class reference -> Class here
+    class_id = Column(Integer, ForeignKey('class.id'))
     guardians = relationship('Guardian',
                              backref=backref('child_of', lazy='dynamic'))
 
@@ -166,5 +168,3 @@ class Qualifications(Base):
 # TODO: linking qualifications class with teachers and school employees etc.
 
 Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
-session = Session()
