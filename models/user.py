@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, DateTime, create_engine
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float
+from sqlalchemy import ForeignKey, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, backref, relationship
-from datetime import datetime
+
+# from datetime import datetime
 
 """
 Assumptions and Issues:
@@ -34,6 +36,7 @@ class Person(Base):
     profileChangedBy = Column(Integer)
     active = Column(Boolean)
     reasonForDeactivation = Column(String)
+    gender = Column(String(6))
     type = Column(String)
 
     __mapper_args__ = {
@@ -96,21 +99,27 @@ class Principal(Person):
     }
 
 
-class Parent(Person):
-    __tablename__ = 'administrator'
+class Guardian(Person):
+    __tablename__ = 'guardian'
     id = Column(Integer, ForeignKey('person.id'), primary_key=True)
     email = Column(String)
     phoneNumber = Column(String)
     nationalID = Column(String, unique=True)
-    child_id = Column(Integer, ForeignKey('student.id'))
 
     def __repr__(self):
-        rstring = "<Parent name='{}' surname='{}' email='{}' >"
+        rstring = "<Guardian name='{}' surname='{}' email='{}' >"
         return rstring.format(self.firstname, self.surname, self.email)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'parent',
+        'polymorphic_identity': 'Guardian',
     }
+
+
+class GuardianStudentRel(Base):
+    __tablename__ = 'guardianStudentRel'
+    id = Column(Integer, primary_key=True)
+    guardian = Column(Integer, ForeignKey('guardian.id'))
+    child_id = Column(Integer, ForeignKey('student.id'))
 
 
 class Student(Person):
@@ -118,9 +127,10 @@ class Student(Person):
     id = Column(Integer, ForeignKey('person.id'), primary_key=True)
     studentID = Column(String, unique=True)
     bcNumber = Column(String)
+    # classID = Column()
     # TODO: <class reference -> Class here
-    parents = relationship('Parent',
-                           backref=backref('child_of', lazy='dynamic'))
+    guardians = relationship('Guardian',
+                             backref=backref('child_of', lazy='dynamic'))
 
     def __repr__(self):
         rstring = "<Student name='{}' surname='{}' email='{}' >"
@@ -133,10 +143,29 @@ class Student(Person):
 
 class Account(Base):
     __tablename__ = 'account'
-    id = Column(Integer, primary_key=True)  # TODO: why is the id a string instead of int?
+    id = Column(Integer, primary_key=True)
     accountID = Column(String, unique=True)
-    # TODO: Complete Account and the rest after qualifications
+    holder = Column(String, ForeignKey('student.id'))
 
+
+transactions = relationship('Transactions', backref=backref('accountID'))
+
+
+class Transactions(Base):
+    id = Column(Integer, primary_key=True)
+    accountID = Column(String, ForeignKey('account.accountID'))
+    dateAdded = Column(DateTime)
+    amountPaid = Column(Float)
+    datePaid = Column(DateTime)
+    balance = Column(Float)
+    paymentDescription = Column(String)
+    receiptNumber = Column(String)
+    dateLastModified = Column(DateTime)
+    lastModifiedBy = Column(Integer, ForeignKey('person.id'))
+
+
+# TODO: Implementation of Qualifications class
+# TODO: linking qualifications class with teachers and school employees etc.
 
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
