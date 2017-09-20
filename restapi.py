@@ -4,8 +4,9 @@ from models import Notification, ViewedNotifications, Timetable, Event, PhotoGal
 from models import session as db_session
 from flask import Flask
 import flask_restless
+from app import app
 
-app = Flask(__name__)
+
 
 manager = flask_restless.APIManager(app, session=db_session)
 
@@ -96,6 +97,3 @@ photo_blueprint = manager.create_api(Photo,
 messages_blueprint = manager.create_api(Message,
                                         methods=['GET', 'POST', 'PUT', 'DELETE'],
                                         collection_name='messages')
-
-if __name__ == '__main__':
-    app.run(debug=True)
