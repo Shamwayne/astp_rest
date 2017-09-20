@@ -9,23 +9,33 @@ app = Flask(__name__)
 
 manager = flask_restless.APIManager(app, session=db_session)
 
+
+"""
+This code hasn't yet undergone rigorous testing yet and needs a whole bunch of tests done on it to ensure maximum
+workiness.
+TODO:
+=> Write up a coherent and consistent documentation for current version
+=> Create Unit tests to check for broken/missing endpoints
+=> Populate the Database with Mock Data
+=> and for me to take a nap lol
+"""
 # User API functions
 
 student_blueprint = manager.create_api(Student,
                                        methods=['GET', 'POST', 'PUT', 'DELETE'],
-                                       collection_name='student')
+                                       collection_name='students')
 
 guardian_blueprint = manager.create_api(Guardian,
                                         methods=['GET', 'POST', 'PUT', 'DELETE'],
-                                        collection_name='guardian')
+                                        collection_name='guardians')
 
 teacher_blueprint = manager.create_api(Teacher,
                                        methods=['GET', 'POST', 'PUT', 'DELETE'],
-                                       collection_name='teacher')
+                                       collection_name='teachers')
 
 administrator_blueprint = manager.create_api(Administrator,
                                              methods=['GET', 'POST', 'PUT', 'DELETE'],
-                                             collection_name='administrator')
+                                             collection_name='administrators')
 
 account_blueprint = manager.create_api(Account,
                                        methods=['GET', 'POST', 'PUT', 'DELETE'],
@@ -39,7 +49,7 @@ subject_blueprint = manager.create_api(Subject,
 
 class_blueprint = manager.create_api(Class,
                                      methods=['GET', 'POST', 'PUT', 'DELETE'],
-                                     collection_name='class')
+                                     collection_name='classes')
 
 curriculum_blueprint = manager.create_api(CurriculumLevel,
                                           methods=['GET', 'POST', 'PUT', 'DELETE'],
@@ -69,7 +79,7 @@ viewed_notifications = manager.create_api(ViewedNotifications,
 
 timetable_blueprint = manager.create_api(Timetable,
                                          methods=['GET', 'POST', 'PUT', 'DELETE'],
-                                         collection_name='timetable')
+                                         collection_name='timetables')
 
 event_blueprint = manager.create_api(Event,
                                      methods=['GET', 'POST', 'PUT', 'DELETE'],
