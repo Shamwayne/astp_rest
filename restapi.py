@@ -15,7 +15,6 @@ def add_api_endpoints(appname):
     => Write up a coherent and consistent documentation for current version
     => Create Unit tests to check for broken/missing endpoints
     => Populate the Database with Mock Data
-    => and for me to take a nap lol
     """
     # User API functions
 

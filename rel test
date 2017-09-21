@@ -1,0 +1,18 @@
+
+
+
+association_table = Table('association', Base.metadata,
+Column('left_id', Integer, ForeignKey('left.id')),
+Column('right_id', Integer, ForeignKey('right.id'))
+)
+
+class Parent(Base):
+__tablename__ = 'left'
+id = Column(Integer, primary_key=True)
+children = relationship("Child",
+secondary=association_table,
+94 Chapter 2. SQLAlchemy ORMSQLAlchemy Documentation, Release 0.9.10
+backref="parents")
+class Child(Base):
+__tablename__ = 'right'
+id = Column(Integer, primary_key=True)
